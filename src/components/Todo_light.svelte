@@ -7,12 +7,16 @@
     export let todoContents;
     let newContent='';
     let activeMode = 'Light';
+    let currentDate = new Date();
+    let completedTime;
     const sendDataToApp = () =>{
         if (newContent=='') return;
         let newTodo = {
             task:newContent,
             completionStatus:false,
-            id:uuidv4()
+            id:uuidv4(),
+            startedTime:formatTime(currentDate),
+            completedTime:completedTime
         }
         todoContents = [...todoContents,newTodo];
         dispatch('getnewtodo',newTodo);
@@ -34,8 +38,21 @@
     }
     const changeCompletionStatus=(index)=>{
         todoContents[index].completionStatus = !todoContents[index].completionStatus;
-        saveinfo()
+        todoContents[index].completedTime = formatTime(currentDate);
+        
+        saveinfo();
     }
+
+
+
+
+
+
+
+
+
+
+
     const saveinfo = ()=>{
         localStorage.setItem('todoContents', JSON.stringify(todoContents));
     }
@@ -45,6 +62,13 @@
         sendDataToApp();
        }
     }
+
+    function formatTime(date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours} : ${minutes}`;
+  }
+
 </script>
 
 <div class="flex flex-grow items-center justify-center h-full text-gray-600 bg-gray-100">
@@ -62,7 +86,7 @@
             </div>
         </div>
         {#each todoContents as todoContent ,index (todoContent.id)}
-        <div class="py-1" on:click={()=>changeCompletionStatus(index)}>
+        <div class="py-1 pb-4 mb-2 relative" on:click={()=>changeCompletionStatus(index)}>
             <input class="hidden" type="checkbox" id={todoContent.id} bind:checked={todoContent.completionStatus} disabled>
             <label class="flex items-center px-2 rounded cursor-pointer hover:bg-gray-100" for={todoContent.id} >
                 <span class="flex checkbox items-center justify-center w-5 h-5 text-transparent border-2 border-gray-300 rounded-full">
@@ -72,6 +96,19 @@
                 </span>
                 <span class="ml-4 my-2 text-sm todoContent">{todoContent.task}</span>
             </label>	
+
+            {#if todoContent.completionStatus!=true}
+            <div class="absolute right-0 bottom-0 h-4 px-2 text-xs bg-gray-100 flex justify-center items-center rounded-lg text-gray-500">
+                {todoContent.startedTime}
+            </div>
+            {:else}
+            <div class="absolute right-0 bottom-0 h-4 px-2 text-xs bg-green-100 flex justify-center items-center rounded-lg text-gray-500">
+                {todoContent.completedTime}
+            </div>
+            <div class="absolute right-left bottom-0 h-4 px-2 text-xs bg-green-100 flex justify-center items-center rounded-lg text-gray-500">
+               completed
+            </div>
+            {/if}
         </div>
         {/each}
         
