@@ -6,24 +6,25 @@
     export let clientName='';
     export let todoContents;
     let newContent='';
-    let checked=false;
     let activeMode = 'Light';
     const sendDataToApp = () =>{
+        if (newContent=='') return;
         let newTodo = {
             task:newContent,
             completionStatus:false,
             id:uuidv4()
         }
         todoContents = [...todoContents,newTodo];
-        saveinfo();
         dispatch('getnewtodo',newTodo);
+        saveinfo();
+        
         newContent = '';
     }
 
     const clearAll =()=>{
         todoContents = [];
+        dispatch('clearDone',todoContents);
         saveinfo();
-        dispatch('getnewtodo','');
     }
 
     const clearDone = ()=>{
@@ -37,6 +38,12 @@
     }
     const saveinfo = ()=>{
         localStorage.setItem('todoContents', JSON.stringify(todoContents));
+    }
+
+    const handleKeyDown = (e)=>{
+       if(e.key ==="Enter"){
+        sendDataToApp();
+       }
     }
 </script>
 
@@ -75,7 +82,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             </button>
-            <input class="flex-grow h-8 ml-4 bg-transparent border-none outline-none font-medium" type="text" placeholder="add a new task" bind:value={newContent}>
+            <input class="flex-grow h-8 ml-4 bg-transparent border-none outline-none font-medium" type="text" placeholder="add a new task" bind:value={newContent} on:keydown={handleKeyDown}>
         </div>
     </div>
     
