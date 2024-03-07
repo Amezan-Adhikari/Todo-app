@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 	import TodoDark from "./components/Todo_dark.svelte";
 	import TodoLight from "./components/Todo_light.svelte";

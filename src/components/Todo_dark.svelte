@@ -14,21 +14,28 @@
             id:uuidv4()
         }
         todoContents = [...todoContents,newTodo];
-        localStorage.setItem('todoContents', JSON.stringify(todoContents));
+        saveinfo();
         dispatch('getnewtodo',newTodo);
         newContent = '';
     }
 
     const clearAll =()=>{
         todoContents = [];
-        localStorage.setItem('todoContents', JSON.stringify(todoContents));
+        saveinfo();
         dispatch('getnewtodo','');
     }
 
     const clearDone = ()=>{
         todoContents = todoContents.filter(todo => todo.completionStatus === false);
-        localStorage.setItem('todoContents', JSON.stringify(todoContents));
+        saveinfo();
         dispatch('clearDone',todoContents);
+    }
+    const changeCompletionStatus=(index)=>{
+        todoContents[index].completionStatus = !todoContents[index].completionStatus;
+        saveinfo()
+    }
+    const saveinfo = ()=>{
+        localStorage.setItem('todoContents', JSON.stringify(todoContents));
     }
 </script>
 
@@ -46,9 +53,9 @@
             <Menu {activeMode} on:click={clearAll}>Clear All</Menu><Menu {activeMode} on:click={clearDone}>Clear Done</Menu>
             </div>
         </div>
-        {#each todoContents as todoContent, index (index)}
-        <div class="py-1">
-            <input class="hidden" type="checkbox" id={todoContent.id} bind:checked={todoContent.completionStatus}>
+        {#each todoContents as todoContent, index (todoContent.id)}
+        <div class="py-1" on:click={()=>changeCompletionStatus(index)}>
+            <input class="hidden" type="checkbox" id={todoContent.id} bind:checked={todoContent.completionStatus} disabled>
             <label class="flex items-center px-2 rounded cursor-pointer hover:bg-gray-900" for={todoContent.id} >
                 <span class="flex checkbox items-center justify-center w-5 h-5 text-transparent border-2 border-gray-500 rounded-full">
                     <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
